@@ -3,7 +3,6 @@ import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 import type { Task } from './types';
 import { fetchTasks, createTask, updateTask, deleteTask } from './api';
-// Importaciones para los componentes de gráficos (aún no creados, pero se importarán aquí)
 import TaskCompletionPieChart from './components/charts/TaskCompletionPieChart';
 import MonthlyTasksBarChart from './components/charts/MonthlyTasksBarChart';
 import { ChartRadialStacked } from './components/charts/ChartRadialStacked';
@@ -71,37 +70,31 @@ function App() {
     }
   };
 
-  // --- Lógica para preparar los datos de los gráficos --- //
-
-  // Gráfico Circular: Tareas Completadas vs. Pendientes
   const completedTasksCount = tasks.filter(task => task.completed).length;
   const pendingTasksCount = tasks.filter(task => !task.completed).length;
 
   const pieChartData = [
-    { name: 'completed', value: completedTasksCount, fill: 'var(--chart-2)' }, // Verde
-    { name: 'pending', value: pendingTasksCount, fill: 'var(--chart-4)' },   // Naranja
+    { name: 'completed', value: completedTasksCount, fill: 'var(--chart-2)' },
+    { name: 'pending', value: pendingTasksCount, fill: 'var(--chart-4)' }, 
   ];
 
-  // Gráfico Radial: Tareas Completadas y Pendientes del Mes Actual
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
   const tasksCurrentMonth = tasks.filter(task => {
-    const taskDate = new Date(task.updatedAt); // Usamos updatedAt como la fecha de referencia para el mes
+    const taskDate = new Date(task.updatedAt);
     return taskDate.getMonth() === currentMonth && taskDate.getFullYear() === currentYear;
   });
 
   const completedTasksCurrentMonth = tasksCurrentMonth.filter(task => task.completed).length;
   const pendingTasksCurrentMonth = tasksCurrentMonth.filter(task => !task.completed).length;
 
-  // Gráfico de Barras: Tareas Completadas por Día
   const getDailyCompletedTasksData = (allTasks: Task[]) => {
-    const dailyCounts: { [key: string]: number } = {}; // { "YYYY-MM-DD": count }
+    const dailyCounts: { [key: string]: number } = {};
     const now = new Date();
 
-    // Initialize counts for the last 7 days
-    for (let i = 15; i >= 0; i--) { // Last 7 days including today
+    for (let i = 15; i >= 0; i--) {
       const date = new Date(now);
       date.setDate(now.getDate() - i);
       const yearMonthDay = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
@@ -110,7 +103,7 @@ function App() {
 
     allTasks.forEach(task => {
       if (task.completed) {
-        const date = new Date(task.updatedAt); // Asumimos updatedAt es la fecha de finalización
+        const date = new Date(task.updatedAt);
         const yearMonthDay = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
         if (dailyCounts.hasOwnProperty(yearMonthDay)) {
           dailyCounts[yearMonthDay] = (dailyCounts[yearMonthDay] || 0) + 1;
@@ -118,7 +111,6 @@ function App() {
       }
     });
 
-    // Convertir a un array de objetos para Recharts, ordenado por fecha
     const formattedData = Object.keys(dailyCounts)
       .sort()
       .map(dateKey => {
@@ -137,44 +129,43 @@ function App() {
     count: {
       label: "Tasks completed",
       theme: {
-        light: "var(--chart-2)", // --chart-1 for light theme
-        dark: "var(--chart-2)",  // --chart-1 for dark theme
+        light: "var(--chart-2)",
+        dark: "var(--chart-2)",
       },
     },
     completed: {
       label: "Completed",
       theme: {
-        light: "var(--chart-2)", // --chart-2 for light theme
-        dark: "var(--chart-2)",  // --chart-2 for dark theme
+        light: "var(--chart-2)",
+        dark: "var(--chart-2)",
       },
     },
     pending: {
       label: "Pending",
       theme: {
-        light: "var(--chart-4)", // --chart-3 for light theme
-        dark: "var(--chart-4)",  // --chart-3 for dark theme
+        light: "var(--chart-4)",
+        dark: "var(--chart-4)",
       },
     },
     totalTasks: {
       label: "Total Tasks",
       theme: {
-        light: "var(--chart-2)", // --chart-5 for light theme (using chart-5 here)
-        dark: "var(--chart-2)",  // --chart-5 for dark theme
+        light: "var(--chart-2)",
+        dark: "var(--chart-2)",
       },
     },
   } satisfies ChartConfig;
 
   return (
-    <div className="w-full max-h-screen h-screen px-20 py-10 flex justify-center items-center">
-      <div className='container flex gap-5 bg-stone-200 px-16 py-10 rounded-2xl'>
-        <div className='w-3/4'>
+    <div className="w-full min-h-screen p-4 sm:p-6 md:p-8 lg:p-10 flex justify-center items-center">
+      <div className='container flex flex-col-reverse lg:flex-row gap-5 bg-stone-200 p-4 sm:p-6 md:p-8 rounded-2xl'>
+        <div className='w-full lg:w-3/4'>
           <h1 className="text-3xl">Task Manager</h1>
-          {/* Sección de Gráficos */}
           <div className="flex flex-col gap-5 mt-5">
             <div className='w-full '>
               <MonthlyTasksBarChart data={barChartData} chartConfig={chartConfig} />
             </div>
-            <div className='w-full grid grid-cols-2 gap-5'>
+            <div className='w-full grid grid-cols-1 md:grid-cols-2 gap-5'>
               <TaskCompletionPieChart data={pieChartData} chartConfig={chartConfig} />
               <ChartRadialStacked 
                 completedTasks={completedTasksCurrentMonth}
@@ -183,10 +174,9 @@ function App() {
             </div>
           </div>
         </div>
-        <div className='w-1/4 max-h-[750px]'>
+        <div className='w-full lg:w-1/4 max-h-[750px]'>
           <div className='flex justify-between'>
             <h2 className="text-2xl mb-4">My Tasks</h2>
-            {/* Formulario de Tareas */}
             <TaskForm
               editingTask={editingTask}
               onCreate={handleCreateTask}
@@ -194,8 +184,6 @@ function App() {
               onCancelEdit={handleCancelEdit}
             />
           </div>
-
-          {/* Lista de Tareas */}
           <TaskList
             tasks={tasks}
             onEdit={startEditing}

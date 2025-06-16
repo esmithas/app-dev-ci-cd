@@ -23,7 +23,11 @@ interface ChartRadialStackedProps {
 }
 
 export function ChartRadialStacked({ completedTasks, pendingTasks }: ChartRadialStackedProps) {
-  const chartData = [{ month: "january", completed: completedTasks, pending: pendingTasks }]
+  const now = new Date();
+  const currentMonth = now.toLocaleString('en-US', { month: 'long' });
+  const currentYear = now.getFullYear();
+
+  const chartData = [{ month: currentMonth, completed: completedTasks, pending: pendingTasks }]
 
 
   const chartConfig = {
@@ -43,7 +47,7 @@ export function ChartRadialStacked({ completedTasks, pendingTasks }: ChartRadial
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Radial Chart - Stacked</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardDescription>{currentMonth} {currentYear}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 items-center pb-0">
         <ChartContainer
