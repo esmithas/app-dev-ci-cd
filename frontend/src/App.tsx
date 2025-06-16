@@ -6,6 +6,7 @@ import { fetchTasks, createTask, updateTask, deleteTask } from './api';
 // Importaciones para los componentes de gráficos (aún no creados, pero se importarán aquí)
 import TaskCompletionPieChart from './components/charts/TaskCompletionPieChart';
 import MonthlyTasksBarChart from './components/charts/MonthlyTasksBarChart';
+import { ChartRadialStacked } from './components/charts/ChartRadialStacked';
 import type { ChartConfig } from './components/ui/chart';
 
 function App() {
@@ -81,6 +82,19 @@ function App() {
     { name: 'pending', value: pendingTasksCount, fill: 'var(--chart-4)' },   // Naranja
   ];
 
+  // Gráfico Radial: Tareas Completadas y Pendientes del Mes Actual
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const tasksCurrentMonth = tasks.filter(task => {
+    const taskDate = new Date(task.updatedAt); // Usamos updatedAt como la fecha de referencia para el mes
+    return taskDate.getMonth() === currentMonth && taskDate.getFullYear() === currentYear;
+  });
+
+  const completedTasksCurrentMonth = tasksCurrentMonth.filter(task => task.completed).length;
+  const pendingTasksCurrentMonth = tasksCurrentMonth.filter(task => !task.completed).length;
+
   // Gráfico de Barras: Tareas Completadas por Día
   const getDailyCompletedTasksData = (allTasks: Task[]) => {
     const dailyCounts: { [key: string]: number } = {}; // { "YYYY-MM-DD": count }
@@ -121,31 +135,38 @@ function App() {
 
   const chartConfig = {
     count: {
-      label: "Tasks",
+      label: "Tasks completed",
       theme: {
-        light: "oklch(0.646 0.222 41.116)", // --chart-1 for light theme
-        dark: "oklch(0.488 0.243 264.376)",  // --chart-1 for dark theme
+        light: "var(--chart-2)", // --chart-1 for light theme
+        dark: "var(--chart-2)",  // --chart-1 for dark theme
       },
     },
     completed: {
       label: "Completed",
       theme: {
-        light: "oklch(0.6 0.118 184.704)", // --chart-2 for light theme
-        dark: "oklch(0.696 0.17 162.48)",  // --chart-2 for dark theme
+        light: "var(--chart-2)", // --chart-2 for light theme
+        dark: "var(--chart-2)",  // --chart-2 for dark theme
       },
     },
     pending: {
       label: "Pending",
       theme: {
-        light: "oklch(0.398 0.07 227.392)", // --chart-3 for light theme
-        dark: "oklch(0.769 0.188 70.08)",  // --chart-3 for dark theme
+        light: "var(--chart-4)", // --chart-3 for light theme
+        dark: "var(--chart-4)",  // --chart-3 for dark theme
+      },
+    },
+    totalTasks: {
+      label: "Total Tasks",
+      theme: {
+        light: "var(--chart-2)", // --chart-5 for light theme (using chart-5 here)
+        dark: "var(--chart-2)",  // --chart-5 for dark theme
       },
     },
   } satisfies ChartConfig;
 
   return (
     <div className="w-full max-h-screen h-screen px-20 py-10 flex justify-center items-center">
-      <div className='container flex gap-5 bg-gray-200 px-16 py-10 rounded-2xl'>
+      <div className='container flex gap-5 bg-stone-200 px-16 py-10 rounded-2xl'>
         <div className='w-3/4'>
           <h1 className="text-3xl">Task Manager</h1>
           {/* Sección de Gráficos */}
@@ -155,13 +176,16 @@ function App() {
             </div>
             <div className='w-full grid grid-cols-2 gap-5'>
               <TaskCompletionPieChart data={pieChartData} chartConfig={chartConfig} />
-              <TaskCompletionPieChart data={pieChartData} chartConfig={chartConfig} />
+              <ChartRadialStacked 
+                completedTasks={completedTasksCurrentMonth}
+                pendingTasks={pendingTasksCurrentMonth}
+              />
             </div>
           </div>
         </div>
         <div className='w-1/4 max-h-[750px]'>
           <div className='flex justify-between'>
-            <h2 className="text-2xl font-semibold mb-4">My Tasks</h2>
+            <h2 className="text-2xl mb-4">My Tasks</h2>
             {/* Formulario de Tareas */}
             <TaskForm
               editingTask={editingTask}

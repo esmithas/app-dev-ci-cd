@@ -36,11 +36,11 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onEdit, onDelete, onToggleCo
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {task.description}
+                  <p className='text-sm text-gray-600 font-light'>{task.description}</p>
                 </CardContent>
                 <CardFooter className='flex gap-2 justify-end'>
                   <Button
-                    className={`${task.completed ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-500 hover:bg-gray-600'}`}
+                    className={`${task.completed ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-500 hover:bg-gray-600'}`}
                     onClick={() => onToggleComplete(task)}
                   >
                     {task.completed ? <FaCheckCircle /> : <FaRegCircle />}

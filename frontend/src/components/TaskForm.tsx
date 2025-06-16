@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { FaPlus } from 'react-icons/fa';
 
 interface TaskFormProps {
   editingTask: Task | null;
@@ -67,7 +68,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ editingTask, onCreate, onUpdate, on
     >
 
       <DialogTrigger asChild>
-        <Button variant="outline">Open Dialog</Button>
+        <Button variant="outline">
+          <FaPlus className='text-blue-600'/>
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
